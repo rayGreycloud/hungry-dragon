@@ -11,16 +11,28 @@ var StateMain = {
     game.load.spritesheet('candy', 'assets/images/main/candy.png',52, 50, 8);
     game.load.image('balloon', 'assets/images/main/thought.png');
     game.load.spritesheet('soundButtons','assets/images/ui/soundButtons.png', 44, 44, 4);
+    game.load.audio('burp', 'assets/sounds/burp.mp3');
+    game.load.audio('gulp', 'assets/sounds/gulp.mp3');
+    game.load.audio('backgroundMusic', 'assets/sounds/background.mp3');
   },
 
   create: function () {
-
+    // Init variables
     score = 0;
-
+    this.musicPlaying = false;
+    
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    game.stage.backgroundColor = '#000000';
     this.top = 0;
     this.bottom = game.height - 120;
+
+    // sounds
+    this.burp = game.add.audio('burp');
+    this.gulp = game.add.audio('gulp');
+    this.backgroundMusic = game.add.audio('backgroundMusic');
+    this.backgroundMusic.volume = 0.5;
+    this.backgroundMusic.loop = true;
 
     // dragon
     this.dragon = game.add.sprite(0, 0, 'dragon');
@@ -35,7 +47,7 @@ var StateMain = {
     if (screen.height > 764) {
       this.background.y = game.world.centerY - this.background.height / 2;
       this.top = this.background.y;
-
+      this.bottom = this.background.y + 360;
     }
 
     this.dragon.bringToTop();
@@ -60,12 +72,12 @@ var StateMain = {
     this.balloonGroup.x = 50;
 
     // text
-    this.scoreText = game.add.text(game.world.centerX, 60, '0');
+    this.scoreText = game.add.text(game.world.centerX, this.top + 60, '0');
     this.scoreText.fill = '#000000';
     this.scoreText.fontSize = 48;
     this.scoreText.anchor.set(0.5, 0.5);
 
-    this.scoreLabel = game.add.text(game.world.centerX, 20, 'score');
+    this.scoreLabel = game.add.text(game.world.centerX, this.top + 20, 'score');
     this.scoreLabel.fill = '#000000';
     this.scoreLabel.fontSize = 32;
     this.scoreLabel.anchor.set(0.5, 0.5);
@@ -83,6 +95,7 @@ var StateMain = {
     this.setListeners();
     this.resetThink();
     this.updateButtons();
+    this.updateMusic();
   },
 
   setListeners: function () {
@@ -102,11 +115,24 @@ var StateMain = {
   toggleMusic: function () {
     musicOn = !musicOn;
     this.updateButtons();
+    this.updateMusic();
   },
 
   toggleSound: function () {
     soundOn = !soundOn;
     this.updateButtons();
+  },
+
+  updateMusic: function () {
+    if (musicOn == true) {
+      if (this.musicPlaying == false) {
+        this.musicPlaying = true;
+        this.backgroundMusic.play();
+      }
+    } else {
+      this.musicPlaying = false;
+      this.backgroundMusic.stop();
+    }
   },
 
   updateButtons: function () {
@@ -126,7 +152,7 @@ var StateMain = {
 
   fireCandy: function () {
     var candy = this.candies.getFirstDead();
-    var yy = game.rnd.integerInRange(0, game.height - 60);
+    var yy = game.rnd.integerInRange(this.top, this.bottom);
     var xx = game.width - 80;
     var type = game.rnd.integerInRange(0, 7);
 
@@ -155,7 +181,14 @@ var StateMain = {
       this.resetThink();
       score++;
       this.scoreText.text = score;
+      if (soundOn == true) {
+        this.gulp.play();
+      }
     } else {
+      this.backgroundMusic.stop();
+      if (soundOn == true) {
+        this.burp.play();
+      }
       candy.kill();
       game.state.start('StateOver');
     }
