@@ -13,6 +13,9 @@ var StateMain = {
   },
 
   create: function () {
+
+    score = 0;
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.top = 0;
@@ -52,6 +55,17 @@ var StateMain = {
     this.balloonGroup.scale.x = 0.5;
     this.balloonGroup.scale.y = 0.5;
     this.balloonGroup.x = 50;
+
+    // text
+    this.scoreText = game.add.text(game.world.centerX, 60, '0');
+    this.scoreText.fill = '#000000';
+    this.scoreText.fontSize = 48;
+    this.scoreText.anchor.set(0.5, 0.5);
+
+    this.scoreLabel = game.add.text(game.world.centerX, 20, 'score');
+    this.scoreLabel.fill = '#000000';
+    this.scoreLabel.fontSize = 32;
+    this.scoreLabel.anchor.set(0.5, 0.5);
 
     game.physics.enable([this.dragon, this.candies], Phaser.Physics.ARCADE);
     this.dragon.body.gravity.y = 500;
@@ -96,8 +110,14 @@ var StateMain = {
   },
 
   onEat: function (dragon, candy) {
-    candy.kill();
-
+    if (this.think.frame == candy.frame) {
+      candy.kill();
+      this.resetThink();
+      score++;
+      this.scoreText.text = score;
+    } else {
+      candy.kill();
+    }
   },
 
   resetThink: function () {
@@ -107,7 +127,7 @@ var StateMain = {
 
   update: function () {
 
-    game.physics.arcade.collide(this.dragon, this.candies, null, this.onEat);
+    game.physics.arcade.collide(this.dragon, this.candies, null, this.onEat, this);
 
     this.balloonGroup.y = this.dragon.y - 60;
 
