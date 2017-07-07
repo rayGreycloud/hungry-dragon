@@ -24,7 +24,7 @@ var StateTitle = {
   },
 
   startGame: function () {
-    game.state.start('StateMain');
+    game.state.start('StateInstructions');
   },
 
   update: function () {}
