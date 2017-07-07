@@ -8,6 +8,7 @@ var StateMain = {
 
     game.load.spritesheet('dragon', 'assets/images/main/dragon.png', 120, 85, 4);
     game.load.image('background', 'assets/images/main/background.png');
+    game.load.spritesheet('candy', 'assets/images/main/candy.png',52, 50, 8);
   },
 
   create: function () {
@@ -32,11 +33,17 @@ var StateMain = {
 
     this.dragon.bringToTop();
     this.dragon.y = this.top;
-    game.physics.enable(this.dragon, Phaser.Physics.ARCADE);
-    this.dragon.body.gravity.y = 500;
 
     this.background.autoScroll(-100, 0);
 
+    // Candies
+    this.candies = game.add.group();
+    this.candies.createMultiple(40, 'candy');
+    this.candies.setAll('checkWorldBounds', true);
+    this.candies.setAll('outOfBoundsKill', true);
+
+    game.physics.enable([this.dragon, this.candies], Phaser.Physics.ARCADE);
+    this.dragon.body.gravity.y = 500;
     this.setListeners();
   },
 
@@ -45,6 +52,21 @@ var StateMain = {
       game.scale.enterIncorrectOrientation.add(this.wrongWay, this);
       game.scale.leaveIncorrectOrientation.add(this.rightWay, this);
     }
+
+    game.time.events.loop(Phaser.Timer.SECOND, this.fireCandy, this);
+  },
+
+  fireCandy: function () {
+    var candy = this.candies.getFirstDead();
+    var yy = game.rnd.integerInRange(0, game.height - 60);
+    var xx = game.width - 100;
+    var type = game.rnd.integerInRange(0, 7);
+
+    candy.frame = type;
+    candy.reset(xx, yy);
+    candy.enable = true;
+    candy.body.velocity.x = -200;
+
   },
 
   wrongWay: function () {
