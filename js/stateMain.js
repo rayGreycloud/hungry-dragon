@@ -44,6 +44,8 @@ var StateMain = {
 
     game.physics.enable([this.dragon, this.candies], Phaser.Physics.ARCADE);
     this.dragon.body.gravity.y = 500;
+    this.dragon.body.immovable = true;
+
     this.setListeners();
   },
 
@@ -81,7 +83,15 @@ var StateMain = {
     this.dragon.body.velocity.y = -350;
   },
 
+  onEat: function (dragon, candy) {
+    candy.kill();
+
+  },
+
   update: function () {
+
+    game.physics.arcade.collide(this.dragon, this.candies, null, this.onEat);
+
     if (game.input.activePointer.isDown) {
       this.flap();
     }
