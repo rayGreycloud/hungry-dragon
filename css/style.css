@@ -10,7 +10,7 @@ body {
   top: 0px;
   left: 0px;
   background-color: white;
-  background-image: url('../images/turn.png');
+  background-image: url('../assets/images/turn.png');
   background-repeat: no-repeat;
   background-position: center center;
   display: none;
