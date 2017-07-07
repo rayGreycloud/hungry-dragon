@@ -11,7 +11,10 @@ var StateMain = {
   },
 
   create: function () {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
     this.top = 0;
+    this.bottom = game.height - 120;
 
     // dragon
     this.dragon = game.add.sprite(0, 0, 'dragon');
@@ -24,10 +27,14 @@ var StateMain = {
     if (screen.height > 764) {
       this.background.y = game.world.centerY - this.background.height / 2;
       this.top = this.background.y;
+
     }
 
     this.dragon.bringToTop();
     this.dragon.y = this.top;
+    game.physics.enable(this.dragon, Phaser.Physics.ARCADE);
+    this.dragon.body.gravity.y = 500;
+
     this.background.autoScroll(-100, 0);
 
     this.setListeners();
@@ -48,5 +55,12 @@ var StateMain = {
     document.getElementById("wrongWay").style.display="none";
   },
 
-  update: function () {}
+  update: function () {
+    if (this.dragon.y > this.bottom) {
+      this.dragon.y = this.bottom;
+      this.dragon.body.gravity.y = 0;
+    } else {
+      this.dragon.body.gravity.y = 500;
+    }
+  }
 }
