@@ -117,6 +117,7 @@ var StateMain = {
       this.scoreText.text = score;
     } else {
       candy.kill();
+      game.state.start('StateOver');
     }
   },
 
